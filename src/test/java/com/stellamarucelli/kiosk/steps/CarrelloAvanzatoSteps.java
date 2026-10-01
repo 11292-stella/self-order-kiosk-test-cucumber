@@ -46,6 +46,8 @@ public class CarrelloAvanzatoSteps {
     // Allora nel carrello "Cappuccino" ha quantità 2
     @Allora("nel carrello {string} ha quantità {int}")
     public void haQuantita(String nome, int quantita) {
+        carrello = new CarrelloPage(DriverManager.getDriver());
+        idProdotto = ApiClient.idProdotto(nome);
         assertEquals(carrello.leggiQuantita(idProdotto), String.valueOf(quantita),
                 "Quantità di " + nome + " nel carrello non corretta");
     }
@@ -79,12 +81,14 @@ public class CarrelloAvanzatoSteps {
     // Allora il carrello è vuoto
     @Allora("il carrello è vuoto")
     public void carrelloVuoto() {
+        carrello = new CarrelloPage(DriverManager.getDriver());
         assertTrue(carrello.isVuoto(), "Il carrello dovrebbe essere vuoto");
     }
 
     // E il cliente torna al menu dal carrello
     @E("il cliente torna al menu dal carrello")
     public void tornaAlMenu() {
+        carrello = new CarrelloPage(DriverManager.getDriver());
         carrello.tornaIndietro();
         menu = new MenuPage(DriverManager.getDriver());
         assertTrue(menu.isVisibile(), "Dal carrello non si è tornati al menu");

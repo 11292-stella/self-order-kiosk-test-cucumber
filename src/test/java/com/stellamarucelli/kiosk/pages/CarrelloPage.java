@@ -41,6 +41,11 @@ public class CarrelloPage {
         return driver.findElement(AppiumBy.flutterKey("txt_quantita_" + prodottoId)).getText();
     }
 
+    // legge la nota di una riga del carrello, es. "Ben caldo"
+    public String leggiNota(int prodottoId) {
+        return driver.findElement(AppiumBy.flutterKey("campo_note_" + prodottoId)).getText();
+    }
+
     // legge il totale "€ 4.00" e lo trasforma nel numero 4.00
     public double leggiTotale() {
         String testo = driver.findElement(txtTotale).getText();      // "€ 4.00"
@@ -61,6 +66,11 @@ public class CarrelloPage {
     // preme "−" sulla riga di quel prodotto
     public void diminuisci(int prodottoId) {
         driver.findElement(AppiumBy.flutterKey("btn_meno_" + prodottoId)).click();
+    }
+
+    // preme il cestino/"rimuovi" sulla riga di quel prodotto
+    public void rimuovi(int prodottoId) {
+        driver.findElement(AppiumBy.flutterKey("btn_rimuovi_" + prodottoId)).click();
     }
 
     // Tocca la freccia ← nella barra in alto (il BackButton di Flutter)
