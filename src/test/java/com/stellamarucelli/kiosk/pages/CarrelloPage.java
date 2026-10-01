@@ -13,8 +13,8 @@ public class CarrelloPage {
     private final FlutterAndroidDriver driver;
 
     // ---- DOVE sono gli elementi ----
-    // Il totale esiste solo nella schermata carrello → ci dice che siamo davvero lì
-    private final By txtTotale = AppiumBy.flutterKey("txt_carrello_totale");
+    private final By txtTotale       = AppiumBy.flutterKey("txt_carrello_totale");
+    private final By btnVaiRiepilogo = AppiumBy.flutterKey("btn_vai_al_riepilogo");   // NUOVO
 
     public CarrelloPage(FlutterAndroidDriver driver) {
         this.driver = driver;
@@ -35,7 +35,7 @@ public class CarrelloPage {
 
     // Il prodotto è nel carrello se compare il suo nome
     public boolean contieneProdotto(String nome) {
-        By prodotto = AppiumBy.flutterText(nome);   // costruito qui: dipende dal nome
+        By prodotto = AppiumBy.flutterText(nome);
         try {
             new WebDriverWait(driver, Duration.ofSeconds(15))
                     .until(d -> !d.findElements(prodotto).isEmpty());
@@ -43,5 +43,12 @@ public class CarrelloPage {
         } catch (TimeoutException e) {
             return false;
         }
+    }
+
+    // ---- COSA FAI ----
+
+    // Preme "Vai al riepilogo"
+    public void vaiAlRiepilogo() {
+        driver.findElement(btnVaiRiepilogo).click();
     }
 }

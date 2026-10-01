@@ -21,4 +21,9 @@ public class DatiTest {
                 "Da portare via"
         );
     }
+
+    // Restituisce un nome di persona italiano casuale (es. "Giulia", "Marco")
+    public static String nomeCliente() {
+        return faker.name().firstName();
+    }
 }
