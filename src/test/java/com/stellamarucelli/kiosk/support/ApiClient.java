@@ -1,6 +1,7 @@
 package com.stellamarucelli.kiosk.support;
 
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
 import java.util.Map;
@@ -14,10 +15,6 @@ public class ApiClient {
     private static final String USERNAME = config("API_USER", "mrossi");          // utente di test del seed locale
     private static final String PASSWORD = config("API_PASSWORD", "password123");
 
-    // Cerca un valore in quest'ordine:
-    // 1) parametro -D di Maven/IntelliJ   (es. -DAPI_BASE_URL=https://...)
-    // 2) variabile d'ambiente             (es. $env:API_BASE_URL)
-    // 3) altrimenti usa il valore predefinito (locale)
     private static String config(String chiave, String predefinito) {
         String valore = System.getProperty(chiave);
         if (valore == null || valore.isBlank()) {
@@ -29,7 +26,9 @@ public class ApiClient {
         return valore;
     }
 
-    // POST /api/Auth/login → restituisce il token JWT
+    // ---- CHIAMATE BASE ----
+
+    // POST /api/Auth/login → token JWT
     public static String login() {
         return given()
                 .baseUri(BASE_URL)
@@ -43,7 +42,7 @@ public class ApiClient {
                 .path("token");
     }
 
-    // GET /api/Ordine/{id} → restituisce la risposta completa dell'ordine
+    // GET /api/Ordine/{id}
     public static Response getOrdine(int id) {
         return given()
                 .baseUri(BASE_URL)
@@ -56,7 +55,7 @@ public class ApiClient {
                 .response();
     }
 
-    // GET /api/Prodotto/{id} → restituisce il prodotto (nome, prezzo, ...)
+    // GET /api/Prodotto/{id}
     public static Response getProdotto(int id) {
         return given()
                 .baseUri(BASE_URL)
@@ -69,9 +68,9 @@ public class ApiClient {
                 .response();
     }
 
-    // GET /api/Prodotto → cerca nella lista il prodotto con quel nome e restituisce il suo id
-    public static int idProdotto(String nome) {
-        Integer id = given()
+    // NUOVO (privato): GET /api/Prodotto → la lista di tutti i prodotti, pronta da interrogare
+    private static JsonPath prodotti() {
+        return given()
                 .baseUri(BASE_URL)
                 .header("Authorization", "Bearer " + login())
                 .when()
@@ -79,12 +78,45 @@ public class ApiClient {
                 .then()
                 .statusCode(200)
                 .extract()
-                .jsonPath()
-                .get("find { it.nome == '" + nome + "' }.id");
+                .jsonPath();
+    }
 
+    // ---- DOMANDE SUI PRODOTTI (usano tutte la lista) ----
+
+    // "Cappuccino" → 5
+    public static int idProdotto(String nome) {
+        Integer id = prodotti().get("find { it.nome == '" + nome + "' }.id");
         if (id == null) {
             throw new IllegalArgumentException("Prodotto non trovato nel backend: " + nome);
         }
         return id;
+    }
+
+    //"Cappuccino" → la sua categoria (es. 1)
+    public static int categoriaDi(String nomeProdotto) {
+        Integer categoria = prodotti().get("find { it.nome == '" + nomeProdotto + "' }.categoriaId");
+        if (categoria == null) {
+            throw new IllegalArgumentException("Prodotto non trovato nel backend: " + nomeProdotto);
+        }
+        return categoria;
+    }
+
+    // una categoria diversa da quella indicata, che abbia almeno un prodotto attivo
+    public static int altraCategoriaConProdotti(int categoriaDaEscludere) {
+        Integer categoria = prodotti().get(
+                "find { it.attivo && it.categoriaId != " + categoriaDaEscludere + " }.categoriaId");
+        if (categoria == null) {
+            throw new IllegalStateException("Nel backend non c'è un'altra categoria con prodotti attivi");
+        }
+        return categoria;
+    }
+
+    // il nome del primo prodotto attivo di una categoria (= la prima card del menu filtrato)
+    public static String primoProdottoDellaCategoria(int categoriaId) {
+        String nome = prodotti().get("find { it.attivo && it.categoriaId == " + categoriaId + " }.nome");
+        if (nome == null) {
+            throw new IllegalStateException("Nessun prodotto attivo nella categoria " + categoriaId);
+        }
+        return nome;
     }
 }
