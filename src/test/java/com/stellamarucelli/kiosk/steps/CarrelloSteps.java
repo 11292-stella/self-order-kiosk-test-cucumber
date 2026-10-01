@@ -8,6 +8,7 @@ import io.cucumber.java.it.Allora;
 import io.cucumber.java.it.Dato;
 import io.cucumber.java.it.E;
 import io.cucumber.java.it.Quando;
+import com.stellamarucelli.kiosk.support.ContestoTest;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -41,6 +42,7 @@ public class CarrelloSteps {
         // 3. controllo che sullo schermo ci sia proprio quel numero
         assertEquals(dettaglio.leggiQuantita(), String.valueOf(quantita),
                 "La quantità mostrata non è corretta");
+        ContestoTest.quantita = quantita;
     }
 
     // E scrive una nota per la cucina
@@ -50,6 +52,7 @@ public class CarrelloSteps {
         System.out.println("Nota usata: " + nota);     // la stampo, così so quale è uscita
         dettaglio.scriviNota(nota);
         assertEquals(dettaglio.leggiNota(), nota, "La nota non è stata scritta correttamente");
+        ContestoTest.nota = nota;
     }
 
     // 3) E aggiunge il prodotto al carrello

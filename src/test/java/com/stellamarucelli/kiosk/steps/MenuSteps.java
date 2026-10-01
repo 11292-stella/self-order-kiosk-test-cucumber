@@ -8,6 +8,7 @@ import io.cucumber.java.it.Dato;
 import io.cucumber.java.it.Quando;
 
 import static org.testng.Assert.assertTrue;
+import com.stellamarucelli.kiosk.support.ContestoTest;
 
 public class MenuSteps {
 
@@ -22,6 +23,7 @@ public class MenuSteps {
 
     @Quando("il cliente apre il prodotto {string}")
     public void apreProdotto(String nome) {
+        ContestoTest.prodotto = nome;
         menu.apriProdotto(nome);                 // ← nome = "Cappuccino" dal feature
     }
 

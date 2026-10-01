@@ -10,6 +10,7 @@ import io.cucumber.java.it.Allora;
 import io.cucumber.java.it.Dato;
 import io.cucumber.java.it.E;
 import io.cucumber.java.it.Quando;
+import com.stellamarucelli.kiosk.support.ContestoTest;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -44,6 +45,7 @@ public class OrdineSteps {
         System.out.println("Cliente: " + nomeCliente);      // lo stampo per riprodurre eventuali errori
         riepilogo.inserisciNome(nomeCliente);
         assertEquals(riepilogo.leggiNome(), nomeCliente, "Il nome non è stato scritto correttamente");
+        ContestoTest.nomeCliente = nomeCliente;
     }
 
     // 4) E conferma l'ordine
@@ -59,6 +61,7 @@ public class OrdineSteps {
         assertTrue(conferma.isVisibile(), "La schermata di conferma non è comparsa");
         System.out.println(conferma.leggiMessaggio());       // es. "Ordine #12 confermato"
         assertTrue(conferma.numeroOrdine() > 0, "Il numero d'ordine non è valido");
+        ContestoTest.numeroOrdine = conferma.numeroOrdine();
     }
 
     // 6) E torna al menu
