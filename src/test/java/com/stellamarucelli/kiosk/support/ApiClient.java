@@ -68,4 +68,23 @@ public class ApiClient {
                 .extract()
                 .response();
     }
+
+    // GET /api/Prodotto → cerca nella lista il prodotto con quel nome e restituisce il suo id
+    public static int idProdotto(String nome) {
+        Integer id = given()
+                .baseUri(BASE_URL)
+                .header("Authorization", "Bearer " + login())
+                .when()
+                .get("/api/Prodotto")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .get("find { it.nome == '" + nome + "' }.id");
+
+        if (id == null) {
+            throw new IllegalArgumentException("Prodotto non trovato nel backend: " + nome);
+        }
+        return id;
+    }
 }

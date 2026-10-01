@@ -12,9 +12,10 @@ public class CarrelloPage {
 
     private final FlutterAndroidDriver driver;
 
-    // ---- DOVE sono gli elementi ----
+    // ---- DOVE sono gli elementi (da carrello_screen.dart) ----
     private final By txtTotale       = AppiumBy.flutterKey("txt_carrello_totale");
-    private final By btnVaiRiepilogo = AppiumBy.flutterKey("btn_vai_al_riepilogo");   // NUOVO
+    private final By btnVaiRiepilogo = AppiumBy.flutterKey("btn_vai_al_riepilogo");
+    private final By txtVuoto        = AppiumBy.flutterKey("txt_carrello_vuoto");   // NUOVO
 
     public CarrelloPage(FlutterAndroidDriver driver) {
         this.driver = driver;
@@ -22,33 +23,61 @@ public class CarrelloPage {
 
     // ---- COSA VEDI ----
 
-    // Il carrello è aperto quando compare il totale
     public boolean isVisibile() {
-        try {
-            new WebDriverWait(driver, Duration.ofSeconds(15))
-                    .until(d -> !d.findElements(txtTotale).isEmpty());
-            return true;
-        } catch (TimeoutException e) {
-            return false;
-        }
+        return aspetta(txtTotale);
     }
 
-    // Il prodotto è nel carrello se compare il suo nome
     public boolean contieneProdotto(String nome) {
-        By prodotto = AppiumBy.flutterText(nome);
-        try {
-            new WebDriverWait(driver, Duration.ofSeconds(15))
-                    .until(d -> !d.findElements(prodotto).isEmpty());
-            return true;
-        } catch (TimeoutException e) {
-            return false;
-        }
+        return aspetta(AppiumBy.flutterText(nome));
+    }
+
+    // il carrello mostra "Il carrello è vuoto"
+    public boolean isVuoto() {
+        return aspetta(txtVuoto);
+    }
+
+    // legge la quantità di una riga, es. "2"
+    public String leggiQuantita(int prodottoId) {
+        return driver.findElement(AppiumBy.flutterKey("txt_quantita_" + prodottoId)).getText();
+    }
+
+    // legge il totale "€ 4.00" e lo trasforma nel numero 4.00
+    public double leggiTotale() {
+        String testo = driver.findElement(txtTotale).getText();      // "€ 4.00"
+        return Double.parseDouble(testo.replace("€", "").trim());    // 4.00
     }
 
     // ---- COSA FAI ----
 
-    // Preme "Vai al riepilogo"
     public void vaiAlRiepilogo() {
         driver.findElement(btnVaiRiepilogo).click();
+    }
+
+    // preme "+" sulla riga di quel prodotto
+    public void aumenta(int prodottoId) {
+        driver.findElement(AppiumBy.flutterKey("btn_piu_" + prodottoId)).click();
+    }
+
+    // preme "−" sulla riga di quel prodotto
+    public void diminuisci(int prodottoId) {
+        driver.findElement(AppiumBy.flutterKey("btn_meno_" + prodottoId)).click();
+    }
+
+    // Tocca la freccia ← nella barra in alto (il BackButton di Flutter)
+    public void tornaIndietro() {
+        driver.findElement(AppiumBy.flutterType("BackButton")).click();
+    }
+
+    // ---- AIUTO INTERNO ----
+
+    // Aspetta max 15s che l'elemento compaia: true se c'è, false se no
+    private boolean aspetta(By elemento) {
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(15))
+                    .until(d -> !d.findElements(elemento).isEmpty());
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
     }
 }

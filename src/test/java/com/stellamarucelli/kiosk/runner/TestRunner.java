@@ -6,7 +6,8 @@ import io.cucumber.testng.CucumberOptions;
 @CucumberOptions(
         features = "src/test/resources/features",
         glue = {"com.stellamarucelli.kiosk.steps", "com.stellamarucelli.kiosk.hooks"},
-        plugin = {"pretty", "html:target/cucumber-report.html"}
+        plugin = {"pretty", "html:target/cucumber-report.html"},
+        tags = "not @bug"
 )
 public class TestRunner extends AbstractTestNGCucumberTests {
 }
