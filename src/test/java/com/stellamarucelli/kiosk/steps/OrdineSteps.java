@@ -33,6 +33,7 @@ public class OrdineSteps {
     // 2) Quando il cliente va al riepilogo
     @Quando("il cliente va al riepilogo")
     public void vaAlRiepilogo() {
+        carrello = new CarrelloPage(DriverManager.getDriver());
         carrello.vaiAlRiepilogo();
         riepilogo = new RiepilogoPage(DriverManager.getDriver());
         assertTrue(riepilogo.isVisibile(), "Il riepilogo non si è aperto");
@@ -41,8 +42,9 @@ public class OrdineSteps {
     // 3) E inserisce il suo nome
     @E("inserisce il suo nome")
     public void inserisceNome() {
-        nomeCliente = DatiTest.nomeCliente();               // Faker genera un nome
-        System.out.println("Cliente: " + nomeCliente);      // lo stampo per riprodurre eventuali errori
+        riepilogo = new RiepilogoPage(DriverManager.getDriver());
+        nomeCliente = DatiTest.nomeCliente();
+        System.out.println("Cliente: " + nomeCliente);
         riepilogo.inserisciNome(nomeCliente);
         assertEquals(riepilogo.leggiNome(), nomeCliente, "Il nome non è stato scritto correttamente");
         ContestoTest.nomeCliente = nomeCliente;
@@ -51,6 +53,7 @@ public class OrdineSteps {
     // 4) E conferma l'ordine
     @E("conferma l'ordine")
     public void confermaOrdine() {
+        riepilogo = new RiepilogoPage(DriverManager.getDriver());
         riepilogo.confermaOrdine();
     }
 

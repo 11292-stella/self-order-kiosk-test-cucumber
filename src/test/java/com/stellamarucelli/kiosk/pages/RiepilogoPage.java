@@ -22,31 +22,51 @@ public class RiepilogoPage {
 
     // ---- COSA VEDI ----
 
-    // Il riepilogo è aperto quando compare la casella del nome
     public boolean isVisibile() {
-        try {
-            new WebDriverWait(driver, Duration.ofSeconds(15))
-                    .until(d -> !d.findElements(campoNome).isEmpty());
-            return true;
-        } catch (TimeoutException e) {
-            return false;
-        }
+        return aspetta(campoNome);
     }
 
-    // Legge il nome scritto nella casella
     public String leggiNome() {
         return driver.findElement(campoNome).getText();
     }
 
+    // NUOVO: l'avviso in basso (SnackBar) con quel testo è comparso?
+    public boolean avvisoVisibile(String testo) {
+        return aspetta(AppiumBy.flutterText(testo));
+    }
+
+    // NUOVO: aspetta che l'avviso sparisca (la SnackBar resta qualche secondo)
+    public void aspettaCheAvvisoSparisca(String testo) {
+        By avviso = AppiumBy.flutterText(testo);
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(10))
+                    .until(d -> d.findElements(avviso).isEmpty());
+        } catch (TimeoutException e) {
+            // se dopo 10s è ancora lì, andiamo avanti: lo segnalerà l'assert successivo
+        }
+    }
+
     // ---- COSA FAI ----
 
-    // Scrive il nome del cliente
+    // MODIFICATO: prima svuota il campo, poi scrive
     public void inserisciNome(String nome) {
+        driver.findElement(campoNome).clear();
         driver.findElement(campoNome).sendKeys(nome);
     }
 
-    // Preme "Conferma ordine" → l'ordine viene inviato al backend
     public void confermaOrdine() {
         driver.findElement(btnConferma).click();
+    }
+
+    // ---- AIUTO INTERNO ----
+
+    private boolean aspetta(By elemento) {
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(15))
+                    .until(d -> !d.findElements(elemento).isEmpty());
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
     }
 }
