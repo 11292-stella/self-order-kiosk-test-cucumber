@@ -8,14 +8,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
+// Schermata CARRELLO (carrello_screen.dart)
 public class CarrelloPage {
 
     private final FlutterAndroidDriver driver;
 
-    // ---- DOVE sono gli elementi (da carrello_screen.dart) ----
+    // ---- DOVE sono gli elementi ----
     private final By txtTotale       = AppiumBy.flutterKey("txt_carrello_totale");
     private final By btnVaiRiepilogo = AppiumBy.flutterKey("btn_vai_al_riepilogo");
-    private final By txtVuoto        = AppiumBy.flutterKey("txt_carrello_vuoto");   // NUOVO
+    private final By txtVuoto        = AppiumBy.flutterKey("txt_carrello_vuoto");
+    private final By frecciaIndietro = AppiumBy.flutterType("BackButton");
+
+    // Le righe hanno Key con l'id del prodotto: cart_item_5, txt_quantita_5, btn_piu_5, ...
+    private By riga(int prodottoId)         { return AppiumBy.flutterKey("cart_item_" + prodottoId); }
+    private By quantita(int prodottoId)     { return AppiumBy.flutterKey("txt_quantita_" + prodottoId); }
+    private By nota(int prodottoId)         { return AppiumBy.flutterKey("campo_note_" + prodottoId); }
+    private By btnPiu(int prodottoId)       { return AppiumBy.flutterKey("btn_piu_" + prodottoId); }
+    private By btnMeno(int prodottoId)      { return AppiumBy.flutterKey("btn_meno_" + prodottoId); }
+    private By btnRimuovi(int prodottoId)   { return AppiumBy.flutterKey("btn_rimuovi_" + prodottoId); }
 
     public CarrelloPage(FlutterAndroidDriver driver) {
         this.driver = driver;
@@ -24,32 +34,39 @@ public class CarrelloPage {
     // ---- COSA VEDI ----
 
     public boolean isVisibile() {
-        return aspetta(txtTotale);
+        return aspettaCheCompaia(txtTotale);
     }
 
     public boolean contieneProdotto(String nome) {
-        return aspetta(AppiumBy.flutterText(nome));
+        return aspettaCheCompaia(AppiumBy.flutterText(nome));
     }
 
-    // il carrello mostra "Il carrello è vuoto"
+    // La riga di quel prodotto è sparita (dopo "rimuovi" o "−" a quantità 1)
+    public boolean rigaSparita(int prodottoId) {
+        return aspettaCheSparisca(riga(prodottoId));
+    }
+
+    // Controllo immediato, senza attese: c'è una riga per questo prodotto?
+    public boolean haRiga(int prodottoId) {
+        return !driver.findElements(riga(prodottoId)).isEmpty();
+    }
+
     public boolean isVuoto() {
-        return aspetta(txtVuoto);
+        return aspettaCheCompaia(txtVuoto);
     }
 
-    // legge la quantità di una riga, es. "2"
     public String leggiQuantita(int prodottoId) {
-        return driver.findElement(AppiumBy.flutterKey("txt_quantita_" + prodottoId)).getText();
+        return driver.findElement(quantita(prodottoId)).getText();
     }
 
-    // legge la nota di una riga del carrello, es. "Ben caldo"
     public String leggiNota(int prodottoId) {
-        return driver.findElement(AppiumBy.flutterKey("campo_note_" + prodottoId)).getText();
+        return driver.findElement(nota(prodottoId)).getText();
     }
 
-    // legge il totale "€ 4.00" e lo trasforma nel numero 4.00
+    // "€ 4.00" → 4.00
     public double leggiTotale() {
-        String testo = driver.findElement(txtTotale).getText();      // "€ 4.00"
-        return Double.parseDouble(testo.replace("€", "").trim());    // 4.00
+        String testo = driver.findElement(txtTotale).getText();
+        return Double.parseDouble(testo.replace("€", "").trim());
     }
 
     // ---- COSA FAI ----
@@ -58,33 +75,45 @@ public class CarrelloPage {
         driver.findElement(btnVaiRiepilogo).click();
     }
 
-    // preme "+" sulla riga di quel prodotto
     public void aumenta(int prodottoId) {
-        driver.findElement(AppiumBy.flutterKey("btn_piu_" + prodottoId)).click();
+        driver.findElement(btnPiu(prodottoId)).click();
     }
 
-    // preme "−" sulla riga di quel prodotto
     public void diminuisci(int prodottoId) {
-        driver.findElement(AppiumBy.flutterKey("btn_meno_" + prodottoId)).click();
+        driver.findElement(btnMeno(prodottoId)).click();
     }
 
-    // preme il cestino/"rimuovi" sulla riga di quel prodotto
     public void rimuovi(int prodottoId) {
-        driver.findElement(AppiumBy.flutterKey("btn_rimuovi_" + prodottoId)).click();
+        driver.findElement(btnRimuovi(prodottoId)).click();
     }
 
-    // Tocca la freccia ← nella barra in alto (il BackButton di Flutter)
+    // Cambia la nota direttamente dal carrello (prima svuota, poi scrive)
+    public void scriviNota(int prodottoId, String testo) {
+        driver.findElement(nota(prodottoId)).clear();
+        driver.findElement(nota(prodottoId)).sendKeys(testo);
+    }
+
+    // Freccia ← dell'app (NON il tasto indietro di Android: con Appium apre il selettore tastiera)
     public void tornaIndietro() {
-        driver.findElement(AppiumBy.flutterType("BackButton")).click();
+        driver.findElement(frecciaIndietro).click();
     }
 
     // ---- AIUTO INTERNO ----
 
-    // Aspetta max 15s che l'elemento compaia: true se c'è, false se no
-    private boolean aspetta(By elemento) {
+    private boolean aspettaCheCompaia(By elemento) {
         try {
             new WebDriverWait(driver, Duration.ofSeconds(15))
                     .until(d -> !d.findElements(elemento).isEmpty());
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
+    private boolean aspettaCheSparisca(By elemento) {
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(10))
+                    .until(d -> d.findElements(elemento).isEmpty());
             return true;
         } catch (TimeoutException e) {
             return false;

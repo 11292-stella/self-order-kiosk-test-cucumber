@@ -1,4 +1,5 @@
 # language: it
+@regressione @negativo
 Funzionalità: Validazione del nome nel riepilogo
 
   Scenario: Senza nome l'ordine non parte
@@ -21,4 +22,4 @@ Funzionalità: Validazione del nome nel riepilogo
     Quando inserisce il suo nome
     E conferma l'ordine
     Allora vede la conferma dell'ordine
-    E torna al menu
+    E torna al menu

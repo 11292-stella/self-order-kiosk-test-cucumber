@@ -1,5 +1,6 @@
 package com.stellamarucelli.kiosk.steps;
 
+import com.stellamarucelli.kiosk.pages.DettaglioProdottoPage;
 import com.stellamarucelli.kiosk.pages.MenuPage;
 import com.stellamarucelli.kiosk.support.ApiClient;
 import com.stellamarucelli.kiosk.support.DriverManager;
@@ -56,5 +57,18 @@ public class CategorieSteps {
         MenuPage menu = new MenuPage(DriverManager.getDriver());
         assertTrue(menu.vedeProdotto(nomeProdotto),
                 nomeProdotto + " non è nel menu");
+    }
+
+    // E il cliente aggiunge al carrello il primo prodotto di quella categoria   (usato dal bug del filtro)
+    @E("il cliente aggiunge al carrello il primo prodotto di quella categoria")
+    public void aggiungePrimoProdotto() {
+        String primo = ApiClient.primoProdottoDellaCategoria(categoriaScelta);
+        MenuPage menu = new MenuPage(DriverManager.getDriver());
+        menu.apriProdotto(primo);
+
+        DettaglioProdottoPage dettaglio = new DettaglioProdottoPage(DriverManager.getDriver());
+        assertTrue(dettaglio.isVisibile(), "Il dettaglio di " + primo + " non si è aperto");
+        dettaglio.aggiungiAlCarrello();
+        assertTrue(menu.isVisibile(), "Dopo l'aggiunta non si è tornati al menu");
     }
 }

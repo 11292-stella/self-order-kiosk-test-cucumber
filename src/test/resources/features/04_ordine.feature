@@ -1,4 +1,5 @@
 # language: it
+@smoke @regressione
 Funzionalità: Invio ordine
 
   Scenario: Il cliente conferma l'ordine e torna al menu
@@ -7,4 +8,4 @@ Funzionalità: Invio ordine
     E inserisce il suo nome
     E conferma l'ordine
     Allora vede la conferma dell'ordine
-    E torna al menu
+    E torna al menu

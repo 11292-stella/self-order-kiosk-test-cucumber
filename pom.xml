@@ -63,6 +63,14 @@
             <version>5.5.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Allure: report HTML navigabile (risultati in target/allure-results) -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-cucumber7-jvm</artifactId>
+            <version>2.29.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -75,4 +83,4 @@
             </plugin>
         </plugins>
     </build>
-</project>
+</project>

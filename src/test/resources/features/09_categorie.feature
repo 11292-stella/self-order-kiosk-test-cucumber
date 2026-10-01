@@ -1,4 +1,5 @@
 # language: it
+@regressione
 Funzionalità: Filtro del menu per categoria
 
   Scenario: Selezionando una categoria il menu mostra solo i suoi prodotti
@@ -9,4 +10,4 @@ Funzionalità: Filtro del menu per categoria
 
   Scenario: Selezionando "Tutte" il menu torna completo
     Quando il cliente seleziona tutte le categorie
-    Allora vede "Cappuccino" nel menu
+    Allora vede "Cappuccino" nel menu

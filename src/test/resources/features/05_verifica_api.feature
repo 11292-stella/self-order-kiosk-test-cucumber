@@ -1,4 +1,5 @@
 # language: it
+@regressione @api
 Funzionalità: Verifica dell'ordine nel backend
 
   Scenario: L'ordine inviato dal kiosk è salvato correttamente
@@ -12,4 +13,4 @@ Funzionalità: Verifica dell'ordine nel backend
   Scenario: La nota scritta dal cliente arriva al backend
     Dato che il kiosk ha confermato un ordine
     Quando leggo l'ordine dal backend
-    Allora la nota del cliente è salvata nell'ordine
+    Allora la nota del cliente è salvata nell'ordine

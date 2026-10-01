@@ -1,4 +1,5 @@
 # language: it
+@smoke @regressione
 Funzionalità: Schermata iniziale
 
   Scenario: Il cliente tocca la splash

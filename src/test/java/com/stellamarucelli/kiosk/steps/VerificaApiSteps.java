@@ -9,6 +9,7 @@ import io.cucumber.java.it.Quando;
 import io.restassured.path.json.JsonPath;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 public class VerificaApiSteps {
@@ -66,5 +67,45 @@ public class VerificaApiSteps {
         String notaNelBackend = ordine.getString("righe[0].note");
         assertEquals(notaNelBackend, ContestoTest.nota,
                 "BUG: la nota scritta nel kiosk non arriva al backend");
+    }
+
+    // ---- Usati dagli scenari 10, 13, 14 e dai bug noti ----
+
+    // E il backend ha registrato 3 "Cappuccino" al prezzo di listino
+    @E("il backend ha registrato {int} {string} al prezzo di listino")
+    public void backendHaRegistrato(int quantita, String nomeProdotto) {
+        JsonPath o = ApiClient.getOrdine(ContestoTest.numeroOrdine).jsonPath();
+        int idAtteso = ApiClient.idProdotto(nomeProdotto);
+        double listino = ApiClient.prezzo(idAtteso);
+
+        assertEquals(o.getString("cliente"), ContestoTest.nomeCliente, "Cliente salvato non corretto");
+        assertEquals(o.getList("righe").size(), 1, "L'ordine dovrebbe avere una sola riga");
+        assertEquals(o.getInt("righe[0].prodottoId"), idAtteso, "Prodotto salvato non corretto");
+        assertEquals(o.getInt("righe[0].quantita"), quantita, "Quantità salvata non corretta");
+        assertEquals(o.getDouble("righe[0].prezzoUnitario"), listino, 0.001,
+                "Il prezzo unitario salvato non è quello di listino");
+        assertEquals(o.getDouble("totale"), listino * quantita, 0.001,
+                "Il totale salvato non è prezzo × quantità");
+    }
+
+    // E nel backend il cliente dell'ordine è "Anna-Maria D'Angelo"
+    @E("nel backend il cliente dell'ordine è {string}")
+    public void clienteNelBackend(String nomeAtteso) {
+        String salvato = ApiClient.getOrdine(ContestoTest.numeroOrdine).jsonPath().getString("cliente");
+        assertEquals(salvato, nomeAtteso, "Il nome cliente è stato modificato durante il salvataggio");
+    }
+
+    // E nel backend esiste un solo ordine per quel cliente
+    @E("nel backend esiste un solo ordine per quel cliente")
+    public void unSoloOrdine() {
+        int quanti = ApiClient.contaOrdiniDelCliente(ContestoTest.nomeCliente, ContestoTest.ultimoIdOrdinePrima);
+        assertEquals(quanti, 1, "Il doppio tocco ha creato " + quanti + " ordini invece di 1");
+    }
+
+    // Allora la risposta non contiene il campo "costoProduzione"   (@bug)
+    @Allora("la risposta non contiene il campo {string}")
+    public void rispostaSenzaCampo(String campo) {
+        assertFalse(ordine.prettify().contains("\"" + campo + "\""),
+                "BUG: la risposta dell'ordine espone il campo interno \"" + campo + "\" al kiosk dei clienti");
     }
 }

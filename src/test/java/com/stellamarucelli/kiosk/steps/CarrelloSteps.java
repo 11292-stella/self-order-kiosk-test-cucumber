@@ -30,14 +30,8 @@ public class CarrelloSteps {
     // 2) Quando il cliente imposta la quantità a 2
     @Quando("il cliente imposta la quantità a {int}")
     public void impostaQuantita(int quantita) {
-        // 1. leggo da dove parte (es. "1") e lo trasformo in numero
-        int attuale = Integer.parseInt(dettaglio.leggiQuantita());
-
-        // 2. premo "+" finché non arrivo al numero richiesto
-        while (attuale < quantita) {
-            dettaglio.aumentaQuantita();
-            attuale++;
-        }
+        // leggo da dove parte e premo "+" solo quanto serve (la logica sta nella Page)
+        dettaglio.impostaQuantita(quantita);
 
         // 3. controllo che sullo schermo ci sia proprio quel numero
         assertEquals(dettaglio.leggiQuantita(), String.valueOf(quantita),

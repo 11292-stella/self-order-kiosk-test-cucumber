@@ -22,11 +22,7 @@ public class RegoleCarrelloSteps {
         assertTrue(dettaglio.isVisibile(), "Il dettaglio di " + nome + " non si è aperto");
 
         // porta la quantità al valore richiesto (parte da 1)
-        int attuale = Integer.parseInt(dettaglio.leggiQuantita());
-        while (attuale < quantita) {
-            dettaglio.aumentaQuantita();
-            attuale++;
-        }
+        dettaglio.impostaQuantita(quantita);
         assertEquals(dettaglio.leggiQuantita(), String.valueOf(quantita), "Quantità nel dettaglio non corretta");
 
         dettaglio.scriviNota(nota);
@@ -51,4 +47,4 @@ public class RegoleCarrelloSteps {
         int id = ApiClient.idProdotto(nome);
         carrello.rimuovi(id);
     }
-}
+}

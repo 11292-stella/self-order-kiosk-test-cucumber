@@ -1,4 +1,5 @@
 # language: it
+@regressione
 Funzionalità: Regole del carrello
 
   Scenario: Aggiungere due volte lo stesso prodotto somma le quantità e tiene l'ultima nota
@@ -10,4 +11,4 @@ Funzionalità: Regole del carrello
     E nel carrello la nota di "Cappuccino" è "Ben caldo"
     E il cliente rimuove "Cappuccino" dal carrello
     E il carrello è vuoto
-    E il cliente torna al menu dal carrello
+    E il cliente torna al menu dal carrello

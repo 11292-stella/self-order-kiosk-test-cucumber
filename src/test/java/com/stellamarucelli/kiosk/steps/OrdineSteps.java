@@ -67,11 +67,22 @@ public class OrdineSteps {
         ContestoTest.numeroOrdine = conferma.numeroOrdine();
     }
 
+    // E il cliente inserisce il nome "Anna-Maria D'Angelo"   (nome scelto dal feature)
+    @Quando("il cliente inserisce il nome {string}")
+    public void inserisceNomeScelto(String nome) {
+        riepilogo = new RiepilogoPage(DriverManager.getDriver());
+        riepilogo.inserisciNome(nome);
+        assertEquals(riepilogo.leggiNome(), nome, "Il nome non è stato scritto correttamente");
+        ContestoTest.nomeCliente = nome;
+    }
+
     // 6) E torna al menu
     @E("torna al menu")
     public void tornaAlMenu() {
-        conferma.tornaAlMenu();
+        conferma = new ConfermaPage(DriverManager.getDriver());
+        // se il timer di 8 secondi ci ha già riportati al menu, va bene lo stesso
+        conferma.tornaAlMenuSeAncoraQui();
         menu = new MenuPage(DriverManager.getDriver());
         assertTrue(menu.isVisibile(), "Dopo la conferma non si è tornati al menu");
     }
-}
+}

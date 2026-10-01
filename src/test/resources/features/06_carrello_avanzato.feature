@@ -1,4 +1,5 @@
 # language: it
+@regressione
 Funzionalità: Gestione del carrello
 
   Scenario: Il cliente cambia la quantità dal carrello e il totale si aggiorna
@@ -13,4 +14,4 @@ Funzionalità: Gestione del carrello
     Dato che nel carrello c'è "Cappuccino"
     Quando diminuisce di 2 la quantità di "Cappuccino" nel carrello
     Allora il carrello è vuoto
-    E il cliente torna al menu dal carrello
+    E il cliente torna al menu dal carrello
